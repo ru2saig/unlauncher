@@ -15,7 +15,8 @@
         <item>Candy</item>
         <item>Pastel</item>
         <item>Noon</item>
-        <item>Wallpaper</item>
+        <item>Dark Wallpaper</item>
+        <item>Light Wallpaper</item>
     </string-array>
 
     <string-array name="time_format_array">

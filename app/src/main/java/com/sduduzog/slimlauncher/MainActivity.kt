@@ -9,6 +9,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.navigation.NavController
@@ -145,6 +146,7 @@ class MainActivity : AppCompatActivity(),
                 5 -> R.style.AppPinkTheme
                 6 -> R.style.AppThemeLight
                 7 -> R.style.AppThemeWallpaperDark
+                8 -> R.style.AppThemeWallpaperLight
                 else -> R.style.AppTheme
             }
         }
