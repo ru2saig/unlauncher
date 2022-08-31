@@ -19,6 +19,11 @@
         <item name="android:fontFamily">@font/ubuntu</item>
     </style>
 
+    <style name="AppThemeWallpaperDark" parent="AppThemeDark">
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <style name="AppGreyTheme" parent="AppThemeDark">
         <item name="colorPrimary">@color/colorBlueGrey</item>
         <item name="colorPrimaryDark">@color/colorBlueGrey</item>
