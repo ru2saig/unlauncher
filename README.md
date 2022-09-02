@@ -8,13 +8,11 @@
 
 ![Build Status](https://github.com/jkuester/unlauncher/workflows/Android%20Master%20Branch%20CI/badge.svg)
 
-> _Freedom from your phone_
-
-[<img src="https://f-droid.org/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/com.jkuester.unlauncher/)
+> _Freedom from your phone_)
 
 The goal of Unlauncher is to provide a clean and simple Android launcher experience. We believe you should have easy access to all of your apps without the distraction of bells, whistles, and notifications clamouring for your attention. You want to be able to use your phone, not have your phone use you!
+
+This is my personal fork of Unlauncher, with some added features. The ru2saig-master branch has my additions. Bug fixes will be commited to the master branch as well, and opened as a pull request upstream.
 
 <p float="left">
   <img height="724" width="400" src="docs/assets/home-screen-1.png">
@@ -23,6 +21,10 @@ The goal of Unlauncher is to provide a clean and simple Android launcher experie
 
 ## About
 
+Features Added:
+- Wallpapers
+- [TODO]
+
 Features:
 
 - List your top apps on the home screen
@@ -30,7 +32,6 @@ Features:
 - Customizable app titles
 - Searchable drawer with all apps
 - Show/Hide the notification bar on your home screen
-- No wallpapers
 - Multiple color themes
 
 ## What people are saying
