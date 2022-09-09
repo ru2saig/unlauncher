@@ -1,9 +1,12 @@
 package com.sduduzog.slimlauncher
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
@@ -14,10 +17,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import com.sduduzog.slimlauncher.di.MainFragmentFactoryEntryPoint
-import com.sduduzog.slimlauncher.utils.BaseFragment
-import com.sduduzog.slimlauncher.utils.HomeWatcher
-import com.sduduzog.slimlauncher.utils.IPublisher
-import com.sduduzog.slimlauncher.utils.ISubscriber
+import com.sduduzog.slimlauncher.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import java.lang.reflect.Method
@@ -155,6 +155,15 @@ class MainActivity : AppCompatActivity(),
         super.onBackPressed()
     }
 
+    private fun isAccessServiceEnabled(): Boolean {
+        val enabled = Settings.Secure.getInt(applicationContext.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED)
+        if (enabled == 1) {
+            val prefString = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            return prefString.contains(packageName + "/" + LockDeviceAccessibilityService::class.java.name)
+        }
+        return false
+    }
+
     private val gestureDetector = GestureDetector(baseContext, object : SimpleOnGestureListener() {
         override fun onLongPress(e: MotionEvent) {
             // Open Options
@@ -162,6 +171,28 @@ class MainActivity : AppCompatActivity(),
             if(homeView != null) {
                 findNavController(homeView).navigate(R.id.action_homeFragment_to_optionsFragment, null)
             }
+        }
+
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { // use AccessibilityService API for this
+                if (isAccessServiceEnabled()) {
+                    val intent = Intent (baseContext, LockDeviceAccessibilityService::class.java)
+                    intent.setPackage(packageName)
+                    intent.action = ACTION_LOCK
+                    startService(intent)
+
+                    Log.d(MainActivity::class.java.name, "Lock!")
+                } else {
+                    Log.d(MainActivity::class.java.name, "Not enabled!")
+                    // TODO: Make a dialog to help the user enable this
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+            }
+            else {
+                // TODO: Use DeviceAdmin API
+            }
+
+            return super.onDoubleTap(e)
         }
 
         override fun onFling(
