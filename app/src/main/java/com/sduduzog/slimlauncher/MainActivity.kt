@@ -176,6 +176,31 @@ class MainActivity : AppCompatActivity(),
         return false
     }
 
+    private fun obtainPermissionAlertDialog(str : String) {
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setMessage(R.string.enable_double_tap_to_lock)
+
+        builder.setPositiveButton(android.R.string.ok)
+        { dialog: DialogInterface?, which: Int ->
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+
+        builder.setNegativeButton(R.string.disable_feature)
+        { dialog: DialogInterface, which: Int -> dialog.dismiss()
+            val edit = settings.edit()
+            edit.apply { putBoolean(getString(R.string.disable_double_tap), true) }.apply()
+
+            Toast.makeText(this@MainActivity,
+                "To enable this feature, go to $str settings on your device and turn on for Unlauncher", Toast.LENGTH_LONG).show()
+        }
+
+        val alert = builder.create()
+        alert.show()
+
+    }
+
     private val gestureDetector = GestureDetector(baseContext, object : SimpleOnGestureListener() {
         override fun onLongPress(e: MotionEvent) {
             // Open Options
@@ -204,28 +229,7 @@ class MainActivity : AppCompatActivity(),
 
                 } else {
                     Log.d(MainActivity::class.java.name, "Not enabled!")
-
-                    val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setMessage(R.string.enable_double_tap_to_lock)
-
-                    builder.setPositiveButton(android.R.string.ok)
-                    { dialog: DialogInterface?, which: Int ->
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    }
-
-                    builder.setNegativeButton(R.string.disable_feature)
-                    { dialog: DialogInterface, which: Int -> dialog.dismiss()
-                        val edit = settings.edit()
-                        edit.apply { putBoolean(getString(R.string.disable_double_tap), true) }.apply()
-
-                        Toast.makeText(this@MainActivity, "To enable this feature, go to Accessibility settings on your device and turn on for Unlauncher", Toast.LENGTH_LONG).show()
-                    }
-
-                    val alert = builder.create()
-                    alert.show()
-
+                    obtainPermissionAlertDialog("Accessibility")
                 }
             }
             else {
@@ -236,27 +240,7 @@ class MainActivity : AppCompatActivity(),
                     Log.d(MainActivity::class.java.name, "Lock! Device Admin")
                 } else {
                     Log.d(MainActivity::class.java.name, "Not enabled! Device Admin")
-
-                    val builder = AlertDialog.Builder(this@MainActivity) // TODO: clean this up, into it's own func
-                    builder.setMessage(R.string.enable_double_tap_to_lock)
-
-                    builder.setPositiveButton(android.R.string.ok)
-                    { dialog: DialogInterface?, which: Int ->
-                        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-                        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComp)
-                        startActivity(intent)
-                    }
-
-                    builder.setNegativeButton(R.string.disable_feature)
-                    { dialog: DialogInterface, which: Int -> dialog.dismiss()
-                        val edit = settings.edit()
-                        edit.apply { putBoolean(getString(R.string.disable_double_tap), true) }.apply()
-
-                        Toast.makeText(this@MainActivity, "To enable this feature, go to Device Admin settings on your device and turn on for Unlauncher", Toast.LENGTH_LONG).show()
-                    }
-
-                    val alert = builder.create()
-                    alert.show()
+                    obtainPermissionAlertDialog("Device Admin")
                 }
             }
 
