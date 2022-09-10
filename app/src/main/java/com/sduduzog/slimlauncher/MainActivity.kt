@@ -2,9 +2,9 @@ package com.sduduzog.slimlauncher
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
+import android.app.admin.DevicePolicyManager
+import android.app.admin.DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN
+import android.content.*
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var settings: SharedPreferences
     private lateinit var navigator: NavController
     private lateinit var homeWatcher: HomeWatcher
+    private lateinit var deviceManager: DevicePolicyManager
     private val subscribers: MutableSet<BaseFragment> = mutableSetOf()
 
     override fun attachSubscriber(s: ISubscriber) {
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(),
         navigator = findNavController(this, R.id.nav_host_fragment)
         homeWatcher = HomeWatcher(this)
         homeWatcher.setOnHomePressedListener(this)
+        deviceManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
     }
 
     override fun onResume() {
@@ -227,7 +229,35 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             else {
-                // TODO: Use DeviceAdmin API
+                val adminComp = ComponentName(this@MainActivity, DeviceAdmin::class.java)
+
+                if (deviceManager.isAdminActive(adminComp)) {
+                    deviceManager.lockNow()
+                    Log.d(MainActivity::class.java.name, "Lock! Device Admin")
+                } else {
+                    Log.d(MainActivity::class.java.name, "Not enabled! Device Admin")
+
+                    val builder = AlertDialog.Builder(this@MainActivity) // TODO: clean this up, into it's own func
+                    builder.setMessage(R.string.enable_double_tap_to_lock)
+
+                    builder.setPositiveButton(android.R.string.ok)
+                    { dialog: DialogInterface?, which: Int ->
+                        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+                        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComp)
+                        startActivity(intent)
+                    }
+
+                    builder.setNegativeButton(R.string.disable_feature)
+                    { dialog: DialogInterface, which: Int -> dialog.dismiss()
+                        val edit = settings.edit()
+                        edit.apply { putBoolean(getString(R.string.disable_double_tap), true) }.apply()
+
+                        Toast.makeText(this@MainActivity, "To enable this feature, go to Device Admin settings on your device and turn on for Unlauncher", Toast.LENGTH_LONG).show()
+                    }
+
+                    val alert = builder.create()
+                    alert.show()
+                }
             }
 
             return super.onDoubleTap(e)
