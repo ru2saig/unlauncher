@@ -1,6 +1,8 @@
 package com.sduduzog.slimlauncher
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
@@ -12,6 +14,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.navigation.NavController
@@ -159,7 +162,14 @@ class MainActivity : AppCompatActivity(),
         val enabled = Settings.Secure.getInt(applicationContext.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED)
         if (enabled == 1) {
             val prefString = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-            return prefString.contains(packageName + "/" + LockDeviceAccessibilityService::class.java.name)
+            val res = prefString.contains(packageName + "/" + LockDeviceAccessibilityService::class.java.name)
+            if(res && settings.getBoolean(getString(R.string.disable_double_tap), true))
+            {
+                val edit = settings.edit()
+                edit.apply { putBoolean(getString(R.string.disable_double_tap), false) }.apply()
+            }
+
+            return res
         }
         return false
     }
@@ -174,18 +184,46 @@ class MainActivity : AppCompatActivity(),
         }
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { // use AccessibilityService API for this
-                if (isAccessServiceEnabled()) {
+            val accessEnabled = isAccessServiceEnabled()
+
+            if(settings.getBoolean(getString(R.string.disable_double_tap), false))
+            {
+                Log.d(MainActivity::class.java.name, "Double Tap Disabled!")
+                return super.onDoubleTap(e)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { // Taken from KISS Launcher
+                if (accessEnabled) {
+                    Log.d(MainActivity::class.java.name, "Lock!")
                     val intent = Intent (baseContext, LockDeviceAccessibilityService::class.java)
                     intent.setPackage(packageName)
                     intent.action = ACTION_LOCK
                     startService(intent)
 
-                    Log.d(MainActivity::class.java.name, "Lock!")
                 } else {
                     Log.d(MainActivity::class.java.name, "Not enabled!")
-                    // TODO: Make a dialog to help the user enable this
-                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    builder.setMessage(R.string.enable_double_tap_to_lock)
+
+                    builder.setPositiveButton(android.R.string.ok)
+                    { dialog: DialogInterface?, which: Int ->
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    }
+
+                    builder.setNegativeButton(R.string.disable_feature)
+                    { dialog: DialogInterface, which: Int -> dialog.dismiss()
+                        val edit = settings.edit()
+                        edit.apply { putBoolean(getString(R.string.disable_double_tap), true) }.apply()
+
+                        Toast.makeText(this@MainActivity, "To enable this feature, go to Accessibility settings on your device and turn on for Unlauncher", Toast.LENGTH_LONG).show()
+                    }
+
+                    val alert = builder.create()
+                    alert.show()
+
                 }
             }
             else {
