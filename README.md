@@ -23,7 +23,7 @@ This is my personal fork of Unlauncher, with some added features. The ru2saig-ma
 
 Features Added:
 - Wallpapers
-- Double Tap to Sleep, via AccessibilityService API
+- Double Tap to Sleep
 
 Features:
 
