@@ -59,7 +59,7 @@
     <string name="remove_all_apps_dialog_message" translatable="false">"This action will not uninstall your apps."
     "It is just to confirm if you're clearing this list on purpose"</string>
     <string name="lock_service_description">The accessibility permission is required to enable double tap to lock. Any data acquired by the service will not leave your device.</string>
-    <string name="enable_double_tap_to_lock">To enable double-tap to lock, you\'ll need to grant the accessibility permission. Enable for Unlauncher in the following screen.</string>
+    <string name="enable_double_tap_to_lock">To enable double-tap to lock, you\'ll need to grant the some permissions. Enable for Unlauncher in the following screen.</string>
     <string name="disable_feature">Disable</string>
     <string name="disable_double_tap">\"disable_double_tap\"</string>
 
