@@ -10,6 +10,7 @@ import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.navigation.Navigation
 import com.sduduzog.slimlauncher.R
@@ -74,8 +75,14 @@ class OptionsFragment : BaseFragment() {
     private fun setupAutomaticDeviceWallpaperSwitch() {
         val prefsRepo = unlauncherDataSource.corePreferencesRepo
         val appIsDefaultLauncher = isActivityDefaultLauncher(activity)
+        val settings = requireContext().getSharedPreferences(getString(R.string.prefs_settings), AppCompatActivity.MODE_PRIVATE)
+        val wallpaperThemeIsSet = when(settings.getInt(getString(R.string.prefs_settings_key_theme), 0)) {
+            7, 8 -> true
+            else -> false
+        }
+
         setupDeviceWallpaperSwitchText(appIsDefaultLauncher)
-        options_fragment_auto_device_theme_wallpaper.isEnabled = appIsDefaultLauncher
+        options_fragment_auto_device_theme_wallpaper.isEnabled = appIsDefaultLauncher && !wallpaperThemeIsSet
 
         prefsRepo.liveData().observe(viewLifecycleOwner) {
             // always uncheck once app isn't default launcher
