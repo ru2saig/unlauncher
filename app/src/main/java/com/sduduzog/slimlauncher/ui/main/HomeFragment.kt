@@ -12,10 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +22,7 @@ import com.jkuester.unlauncher.datastore.UnlauncherApp
 import com.sduduzog.slimlauncher.R
 import com.sduduzog.slimlauncher.adapters.AppDrawerAdapter
 import com.sduduzog.slimlauncher.adapters.HomeAdapter
+import com.sduduzog.slimlauncher.datasource.UnlauncherDataSource
 import com.sduduzog.slimlauncher.models.HomeApp
 import com.sduduzog.slimlauncher.models.MainViewModel
 import com.sduduzog.slimlauncher.utils.BaseFragment
@@ -34,17 +34,19 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLaunchAppListener {
+class HomeFragment : BaseFragment(), OnLaunchAppListener {
+    @Inject
+    lateinit var unlauncherDataSource: UnlauncherDataSource
+
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var receiver: BroadcastReceiver
     private lateinit var appDrawerAdapter: AppDrawerAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.home_fragment, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = inflater.inflate(R.layout.home_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,9 +55,9 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
         home_fragment_list.adapter = adapter1
         home_fragment_list_exp.adapter = adapter2
 
-        val unlauncherAppsRepo = getUnlauncherDataSource().unlauncherAppsRepo
+        val unlauncherAppsRepo = unlauncherDataSource.unlauncherAppsRepo
 
-        viewModel.apps.observe(viewLifecycleOwner, { list ->
+        viewModel.apps.observe(viewLifecycleOwner) { list ->
             list?.let { apps ->
                 adapter1.setItems(apps.filter {
                     it.sortingIndex < 3
@@ -69,7 +71,7 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
                     unlauncherAppsRepo.setHomeApps(apps)
                 }
             }
-        })
+        }
 
         appDrawerAdapter =
             AppDrawerAdapter(AppDrawerListener(), viewLifecycleOwner, unlauncherAppsRepo)
@@ -92,7 +94,7 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
         updateClock()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            getUnlauncherDataSource().unlauncherAppsRepo.setApps(getInstalledApps())
+            unlauncherDataSource.unlauncherAppsRepo.setApps(getInstalledApps())
         }
         if (!::appDrawerAdapter.isInitialized) {
             appDrawerAdapter.setAppFilter()
@@ -135,8 +137,8 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
             }
         }
 
-        getUnlauncherDataSource().quickButtonPreferencesRepo.liveData()
-            .observe(viewLifecycleOwner, { prefs ->
+        unlauncherDataSource.quickButtonPreferencesRepo.liveData()
+            .observe(viewLifecycleOwner) { prefs ->
                 val leftButtonIcon = prefs.leftButton.iconId
                 home_fragment_call.setImageResource(leftButtonIcon)
                 if (leftButtonIcon != R.drawable.ic_empty) {
@@ -177,7 +179,7 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
                         }
                     }
                 }
-            })
+            }
 
         app_drawer_edit_text.addTextChangedListener(appDrawerAdapter.searchBoxListener)
 
@@ -194,7 +196,7 @@ class HomeFragment(private val viewModel: MainViewModel) : BaseFragment(), OnLau
 
                     motionLayout?.endState -> {
                         // Check for preferences to open the keyboard
-                        getUnlauncherDataSource().unlauncherAppsRepo.liveData().observe(viewLifecycleOwner) {
+                        unlauncherDataSource.corePreferencesRepo.liveData().observe(viewLifecycleOwner) {
                             if (it.activateKeyboardInDrawer) {
                                 // show the keyboard and set focus to the EditText when swiping down
                                 inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0)

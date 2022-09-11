@@ -70,7 +70,7 @@ class UnlauncherAppsRepository(
                 )
             }
 
-            if(appAdded) {
+            if (appAdded) {
                 sortAppsAlphabetically(unlauncherAppsBuilder)
             }
             unlauncherAppsBuilder.build()
@@ -135,14 +135,6 @@ class UnlauncherAppsRepository(
                     )
                 }
                 builder.build()
-            }
-        }
-    }
-
-    fun updateActivateKeyboardInDrawer(activateKeyboardInDrawer: Boolean) {
-        lifecycleScope.launch {
-            unlauncherAppsStore.updateData {
-                it.toBuilder().setActivateKeyboardInDrawer(activateKeyboardInDrawer).build()
             }
         }
     }

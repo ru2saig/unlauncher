@@ -12,15 +12,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.sduduzog.slimlauncher.BuildConfig
 import com.sduduzog.slimlauncher.R
 import com.sduduzog.slimlauncher.data.model.App
-import com.sduduzog.slimlauncher.datasource.UnlauncherDataSource
 
 abstract class BaseFragment : Fragment(), ISubscriber {
-    private lateinit var unlauncherDataSource: UnlauncherDataSource
-
     abstract fun getFragmentView(): ViewGroup
 
 
@@ -36,13 +32,11 @@ abstract class BaseFragment : Fragment(), ISubscriber {
                     val flags = requireActivity().window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                     getFragmentView().systemUiVisibility = flags
                 }
-
             }
             val value = TypedValue()
             requireContext().theme.resolveAttribute(R.attr.colorPrimary, value, true)
             requireActivity().window.statusBarColor = value.data
         }
-
     }
 
     override fun onStart() {
@@ -80,15 +74,15 @@ abstract class BaseFragment : Fragment(), ISubscriber {
         val myUserHandle = Process.myUserHandle()
 
         for (profile in manager.userProfiles) {
-            val prefix = if (profile == myUserHandle) "" else "\uD83C\uDD46 " //Unicode for boxed w
+            val prefix = if (profile.equals(myUserHandle)) "" else "\uD83C\uDD46 " //Unicode for boxed w
             val profileSerial = manager.getSerialNumberForUser(profile)
 
             for (activityInfo in launcher.getActivityList(null, profile)) {
                 val app = App(
-                        appName = prefix + activityInfo.label.toString(),
-                        packageName = activityInfo.applicationInfo.packageName,
-                        activityName = activityInfo.name,
-                        userSerial = profileSerial
+                    appName = prefix + activityInfo.label.toString(),
+                    packageName = activityInfo.applicationInfo.packageName,
+                    activityName = activityInfo.name,
+                    userSerial = profileSerial
                 )
                 list.add(app)
             }
@@ -99,13 +93,5 @@ abstract class BaseFragment : Fragment(), ISubscriber {
         val filter = mutableListOf<String>()
         filter.add(BuildConfig.APPLICATION_ID)
         return list.filterNot { filter.contains(it.packageName) }
-    }
-
-    protected fun getUnlauncherDataSource(): UnlauncherDataSource {
-        if (!::unlauncherDataSource.isInitialized) {
-            unlauncherDataSource =
-                UnlauncherDataSource(requireContext(), viewLifecycleOwner.lifecycleScope)
-        }
-        return unlauncherDataSource
     }
 }

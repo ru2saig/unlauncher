@@ -15,11 +15,13 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import com.sduduzog.slimlauncher.di.MainFragmentFactoryEntryPoint
+import com.sduduzog.slimlauncher.utils.*
 import com.sduduzog.slimlauncher.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
@@ -32,10 +34,13 @@ class MainActivity : AppCompatActivity(),
         SharedPreferences.OnSharedPreferenceChangeListener,
         HomeWatcher.OnHomePressedListener, IPublisher {
 
+    private val wallpaperManager = WallpaperManager(this)
+
     private lateinit var settings: SharedPreferences
     private lateinit var navigator: NavController
     private lateinit var homeWatcher: HomeWatcher
     private lateinit var deviceManager: DevicePolicyManager
+
     private val subscribers: MutableSet<BaseFragment> = mutableSetOf()
 
     override fun attachSubscriber(s: ISubscriber) {
@@ -89,6 +94,11 @@ class MainActivity : AppCompatActivity(),
         homeWatcher.stopWatch()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        settings.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) toggleStatusBar()
@@ -104,12 +114,20 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun getTheme(): Resources.Theme {
-        val theme = super.getTheme()
+    override fun onApplyThemeResource(theme: Resources.Theme?, @StyleRes resid: Int, first: Boolean) {
+        super.onApplyThemeResource(theme, resid, first)
+        wallpaperManager.onApplyThemeResource(theme, resid)
+    }
+
+    override fun setTheme(resId: Int) {
+        super.setTheme(getUserSelectedThemeRes())
+    }
+
+    @StyleRes
+    fun getUserSelectedThemeRes(): Int {
         settings = getSharedPreferences(getString(R.string.prefs_settings), MODE_PRIVATE)
         val active = settings.getInt(getString(R.string.prefs_settings_key_theme), 0)
-        theme.applyStyle(resolveTheme(active), true)
-        return theme
+        return resolveTheme(active)
     }
 
     override fun onBackPressed() {

@@ -36,7 +36,6 @@
     <string name="prefs_settings_key_toggle_status_bar" translatable="false">hide_status_bar</string>
     <string name="choose_time_format_dialog_title">Choose Time Format</string>
     <string name="main_fragment_options">Options</string>
-    <string name="options_fragment_about_slim">About Unlauncher</string>
     <string name="options_fragment_device_settings">Device Settings</string>
     <string name="options_fragment_change_theme">Change Theme</string>
     <string name="options_fragment_choose_time_format">Choose Time Format</string>
@@ -47,6 +46,8 @@
     <string name="options_fragment_hide_status_bar">Hide Status Bar</string>
     <string name="options_fragment_show_status_bar">Show Status Bar</string>
     <string name="customize_app_drawer_fragment_open_keyboard">Open Keyboard</string>
+    <string name="customize_app_drawer_fragment_auto_theme_wallpaper_text">Set theme background as wallpaper</string>
+    <string name="customize_app_drawer_fragment_auto_theme_wallpaper_subtext_no_default_launcher">App needs to be default launcher</string>
     <string name="customize_app_drawer_fragment_visible_apps">Visible Apps</string>
     <string name="customise_apps_fragment_add">Add</string>
     <string name="menu_rename">Rename</string>
