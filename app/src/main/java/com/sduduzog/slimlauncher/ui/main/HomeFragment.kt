@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
@@ -182,6 +183,17 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
             }
 
         app_drawer_edit_text.addTextChangedListener(appDrawerAdapter.searchBoxListener)
+        app_drawer_edit_text.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    val app = appDrawerAdapter.returnFirstResult()
+                    launchApp(app.packageName, app.className, app.userSerial)
+                    resetAppDrawerEditText()
+                    true
+                }
+                else -> false
+            }
+        }
 
         home_fragment.setTransitionListener(object : TransitionListener {
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {

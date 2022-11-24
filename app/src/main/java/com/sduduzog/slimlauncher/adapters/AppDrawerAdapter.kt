@@ -48,6 +48,10 @@ class AppDrawerAdapter(
         return ViewHolder(view)
     }
 
+    fun returnFirstResult(): UnlauncherApp {
+        return filteredApps[0]
+    }
+
     fun setAppFilter(query: String = "") {
         filterQuery = regex.replace(query, "")
         this.updateDisplayedApps()
