@@ -48,8 +48,10 @@ class AppDrawerAdapter(
         return ViewHolder(view)
     }
 
-    fun returnFirstResult(): UnlauncherApp {
-        return filteredApps[0]
+    fun returnFirstResult(): UnlauncherApp? {
+        if(filteredApps.isNotEmpty())
+            return filteredApps[0]
+        return null
     }
 
     fun setAppFilter(query: String = "") {
