@@ -8,6 +8,7 @@ import android.os.UserManager
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -187,8 +188,8 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> {
                     val app = appDrawerAdapter.returnFirstResult()
-                    launchApp(app.packageName, app.className, app.userSerial)
-                    resetAppDrawerEditText()
+                    if (app != null)
+                        AppDrawerListener().onAppClicked(app)
                     true
                 }
                 else -> false
