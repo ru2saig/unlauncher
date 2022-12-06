@@ -8,6 +8,7 @@ import android.os.UserManager
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -279,6 +280,11 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
     }
 
     inner class AppDrawerListener {
+        fun onAppLongClicked(app : UnlauncherApp) : Boolean {
+            Log.i("HomeFragment App Long Clicked", app.toString())
+            return true
+        }
+
         fun onAppClicked(app: UnlauncherApp) {
             launchApp(app.packageName, app.className, app.userSerial)
             home_fragment.transitionToStart()

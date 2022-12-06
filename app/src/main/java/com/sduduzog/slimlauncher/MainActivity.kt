@@ -163,13 +163,13 @@ class MainActivity : AppCompatActivity(),
     }
 
     private val gestureDetector = GestureDetector(baseContext, object : SimpleOnGestureListener() {
-        override fun onLongPress(e: MotionEvent) {
+        /*override fun onLongPress(e: MotionEvent) {
             // Open Options
             val homeView = findViewById<View>(R.id.home_fragment)
             if(homeView != null) {
                 findNavController(homeView).navigate(R.id.action_homeFragment_to_optionsFragment, null)
             }
-        }
+        }*/
 
         override fun onFling(
             e1: MotionEvent,
