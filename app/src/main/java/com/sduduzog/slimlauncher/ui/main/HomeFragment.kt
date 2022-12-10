@@ -10,9 +10,11 @@ import android.provider.CalendarContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.PopupMenu
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.MotionLayout.TransitionListener
 import androidx.fragment.app.viewModels
@@ -36,6 +38,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), OnLaunchAppListener {
@@ -280,8 +283,43 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
     }
 
     inner class AppDrawerListener {
-        fun onAppLongClicked(app : UnlauncherApp) : Boolean {
-            Log.i("HomeFragment App Long Clicked", app.toString())
+        fun onAppLongClicked(app : UnlauncherApp, view: View) : Boolean {
+            val popupMenu = PopupMenu(this@HomeFragment.context, view)
+            popupMenu.inflate(R.menu.app_long_press_menu)
+
+            popupMenu.setOnMenuItemClickListener { item: MenuItem? ->
+
+                when (item!!.itemId) {
+                    R.id.open -> {
+                        Log.i("HomeFragment Long Pressed", "Open app ${app.packageName}")
+                    }
+                    R.id.info -> {
+                        Log.i(
+                            "HomeFragment Long Pressed",
+                            "Open app ${app.packageName} info in settings"
+                        )
+                    }
+                    R.id.hide -> {
+                        Log.i("HomeFragment Long Pressed", "Hide app ${app.packageName}")
+                    }
+                    R.id.rename -> {
+                        Log.i("HomeFragment Long Pressed", "Rename app ${app.packageName}")
+                    }
+                    R.id.uninstall -> {
+                        Log.i("HomeFragment Long Pressed", "Uninstall app ${app.packageName}")
+                    }
+                }
+                true
+            }
+
+            val fieldMPopup = PopupMenu::class.java.getDeclaredField("mPopup")
+            fieldMPopup.isAccessible = true
+            val mPopup = fieldMPopup.get(popupMenu)
+            mPopup.javaClass
+                .getDeclaredMethod("setForceShowIcon", Boolean::class.java)
+                .invoke(mPopup, true)
+
+            popupMenu.show()
             return true
         }
 

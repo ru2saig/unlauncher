@@ -40,7 +40,7 @@ class AppDrawerAdapter(
             listener.onAppClicked(item)
         }
         holder.itemView.setOnLongClickListener {
-            listener.onAppLongClicked(item)
+            listener.onAppLongClicked(item, it)
         }
     }
 
