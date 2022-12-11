@@ -29,11 +29,8 @@ import com.sduduzog.slimlauncher.R
 import com.sduduzog.slimlauncher.adapters.AppDrawerAdapter
 import com.sduduzog.slimlauncher.adapters.HomeAdapter
 import com.sduduzog.slimlauncher.datasource.UnlauncherDataSource
-import com.sduduzog.slimlauncher.datasource.apps.UnlauncherAppsRepository
-import com.sduduzog.slimlauncher.models.CustomiseAppsViewModel
 import com.sduduzog.slimlauncher.models.HomeApp
 import com.sduduzog.slimlauncher.models.MainViewModel
-import com.sduduzog.slimlauncher.ui.dialogs.RenameAppDialog
 import com.sduduzog.slimlauncher.utils.BaseFragment
 import com.sduduzog.slimlauncher.utils.OnLaunchAppListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -310,7 +307,7 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
                         Toast.makeText(context, "Unhide under Unlauncher's Options > Customize Drawer > Visible Apps", Toast.LENGTH_LONG).show()
                     }
                     R.id.rename -> {
-                        Log.i("HomeFragment Long Pressed", "Rename app ${app.packageName}")
+                        unlauncherDataSource.unlauncherAppsRepo.updateDisplayName(app, "AAAAAAAAAAA")
                     }
                     R.id.uninstall -> {
                         val intent = Intent(Intent.ACTION_DELETE)
