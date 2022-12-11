@@ -63,5 +63,10 @@
     <string name="enable_double_tap_to_lock">To enable double-tap to lock, you\'ll need to grant the some permissions. Enable for Unlauncher in the following screen.</string>
     <string name="disable_feature">Disable</string>
     <string name="disable_double_tap">\"disable_double_tap\"</string>
+    <string name="open_app">Open App</string>
+    <string name="app_info">App Info</string>
+    <string name="hide_app">Hide App</string>
+    <string name="rename_app">Rename App</string>
+    <string name="uninstall">Uninstall</string>
 
 </resources>

@@ -1,10 +1,10 @@
 package com.sduduzog.slimlauncher
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.admin.DevicePolicyManager
 import android.content.*
 import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -15,10 +15,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StyleRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.sduduzog.slimlauncher.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
@@ -28,8 +30,8 @@ import kotlin.math.absoluteValue
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        HomeWatcher.OnHomePressedListener, IPublisher {
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    HomeWatcher.OnHomePressedListener, IPublisher {
 
     private val wallpaperManager = WallpaperManager(this)
 
@@ -153,7 +155,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     companion object {
-
+        @StyleRes
         fun resolveTheme(i: Int): Int {
             return when (i) {
                 1 -> R.style.AppThemeDark
@@ -214,12 +216,30 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    private fun isVisible(view: View): Boolean {
+        if (!view.isShown) {
+            return false
+        }
+
+        val actualPosition = Rect()
+        view.getGlobalVisibleRect(actualPosition)
+        val screen = Rect(0, 0, Resources.getSystem().displayMetrics.widthPixels, Resources.getSystem().displayMetrics.heightPixels)
+        return actualPosition.intersect(screen)
+    }
+
     private val gestureDetector = GestureDetector(baseContext, object : SimpleOnGestureListener() {
         override fun onLongPress(e: MotionEvent) {
             // Open Options
+            val recyclerView = findViewById<RecyclerView>(R.id.app_drawer_fragment_list)
             val homeView = findViewById<View>(R.id.home_fragment)
-            if(homeView != null) {
-                findNavController(homeView).navigate(R.id.action_homeFragment_to_optionsFragment, null)
+
+            if(homeView != null && recyclerView != null)
+            {
+                if(isVisible(recyclerView))
+                   recyclerView.performLongClick()
+                else // we are in the homeFragment
+                    findNavController(homeView).navigate(R.id.action_homeFragment_to_optionsFragment, null)
+
             }
         }
 

@@ -17,6 +17,7 @@ This is my personal fork of Unlauncher, with some added features. The ru2saig-ma
 <p float="left">
   <img height="724" width="400" src="docs/assets/home-screen-1.png">
   <img height="724" width="400" src="docs/assets/home-screen-2.png">
+  <img height="724" width="400" src="docs/assets/app-drawer-1.png">
 </p>
 
 ## About
@@ -24,6 +25,7 @@ This is my personal fork of Unlauncher, with some added features. The ru2saig-ma
 Features Added:
 - Wallpapers
 - Double Tap to Sleep
+- Long Press Menu for apps in Drawer
 
 Features:
 
