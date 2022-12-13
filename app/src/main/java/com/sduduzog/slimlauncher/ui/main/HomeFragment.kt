@@ -112,6 +112,9 @@ class HomeFragment : BaseFragment(), OnLaunchAppListener {
         if (layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
             app_drawer_fragment_list.scrollToPosition(0)
         }
+
+        home_fragment.transitionToStart()
+        resetAppDrawerEditText()
     }
 
     override fun onStop() {
